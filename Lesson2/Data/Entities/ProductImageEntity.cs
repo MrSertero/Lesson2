@@ -4,6 +4,9 @@ using Lesson2.Data.Entities;
 
 namespace Lesson2.Data.Entities
 {
+    /// <summary>
+    /// ProductImageEntity представляє таблицю product_images в базі даних
+    /// </summary>
     [Table("tbl_product_images")]
     public class ProductImageEntity
     {

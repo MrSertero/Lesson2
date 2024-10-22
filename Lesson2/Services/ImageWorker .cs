@@ -13,6 +13,9 @@ namespace Lesson2.Services
         {
             _environment = environment;
         }
+        /// <summary>
+        /// Завантажує зображення за вказаною URL-адресою і зберігає його після стиснення
+        /// </summary>
         public string Save(string url)
         {
             try
@@ -42,6 +45,9 @@ namespace Lesson2.Services
                 return String.Empty;
             }
         }
+        /// <summary>
+        /// Зберігає завантажений файл-зображення після стиснення
+        /// </summary>
         public string Save(IFormFile file)
         {
             try
@@ -67,10 +73,8 @@ namespace Lesson2.Services
         }
 
         /// <summary>
-        /// Стискаємо фото
+        /// Стискає зображення до кількох версій різних розмірів та зберігає їх у форматі .webp
         /// </summary>
-        /// <param name="bytes">Набір байтів фото</param>
-        /// <returns>Повертаємо назву збереженого фото</returns>
         private string CompresImage(byte[] bytes)
         {
             string imageName = Guid.NewGuid().ToString() + ".webp";
@@ -99,7 +103,9 @@ namespace Lesson2.Services
 
             return imageName;
         }
-
+        /// <summary>
+        /// Видаляє всі версії зображення різних розмірів з файлової системи
+        /// </summary>
         public void Delete(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
@@ -127,12 +133,6 @@ namespace Lesson2.Services
                     }
                 }
             });
-            //foreach (int size in sizes)
-            //{
-            //    var fileSave = Path.Combine(_environment.WebRootPath, dirName, $"{size}_{fileName}");
-            //    if (File.Exists(fileSave))
-            //        File.Delete(fileSave);
-            //}
         }
     }
 }

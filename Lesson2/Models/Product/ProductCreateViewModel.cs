@@ -1,7 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace Lesson2.Models.Product;
-
+/// <summary>
+///  Використовується для передачі даних із форми створення продукту до контролера
+/// </summary>
 public class ProductCreateViewModel
 {
     [Display(Name = "Назва продукту")]
@@ -11,4 +14,8 @@ public class ProductCreateViewModel
     public List<IFormFile> Photos { get; set; } = new List<IFormFile>();
     [Display(Name = "Ціна")]
     public string Price { get; set; } = string.Empty;
+    [Display(Name = "Category")]
+    [Required(ErrorMessage = "Choose a category")]
+    public int CategoryId { get; set; }
+    public SelectList? CategoryList { get; set; }
 }

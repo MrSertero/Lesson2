@@ -29,6 +29,9 @@ namespace Lesson2.Controllers
         }
 
         //метод у контролері називаться - action - дія
+        /// <summary>
+        /// Повертає список категорій із бази даних у вигляді моделей CategoryItenViewModel
+        /// </summary>
         public IActionResult Index()
         {
             var model = _dbContext.Categories
@@ -36,14 +39,18 @@ namespace Lesson2.Controllers
                 .ToList();
             return View(model);
         }
-
+        /// <summary>
+        /// Повертає порожню форму для створення нової категорії
+        /// </summary>
         [HttpGet] //це означає, що буде відображатися сторінки для перегляду
         public IActionResult Create()
         {
             //Ми повертає View - пусту, яка відобраєате сторінку де потрібно ввести дані для категорії
             return View();
         }
-
+        /// <summary>
+        /// Зберігає нову категорію в базу даних на основі даних з форми.
+        /// </summary>
         [HttpPost] //це означає, що ми отримуємо дані із форми від клієнта
         public IActionResult Create(CategoryCreateViewModel model)
         {
@@ -57,17 +64,6 @@ namespace Lesson2.Controllers
             }
             if (model.Photo != null)
             {
-                //унікальне значенн, яке ніколи не повториться
-                //string fileName = Guid.NewGuid().ToString();
-                //var ext = Path.GetExtension(model.Photo.FileName);
-                //fileName += ext;
-                //var saveFile = Path.Combine(dirSave, fileName);
-                //using (var stream = new FileStream(saveFile, FileMode.Create))
-                //    model.Photo.CopyTo(stream);
-                //entity.Image = fileName;
-
-                //string fileName = _imageWorker.IFormFileToString(model.Photo);
-                //_imageWorker.Save(model.Photo);
                 string fileName = _imageWorker.Save(model.Photo);
                 entity.Image = fileName;
             }
@@ -76,7 +72,9 @@ namespace Lesson2.Controllers
             //Переходимо до списку усіх категорій, тобото визиваємо метод Index нашого контролера
             return Redirect("/");
         }
-
+        /// <summary>
+        /// Видаляє категорію з бази даних за її ID.
+        /// </summary>
         [HttpPost]
         public IActionResult Delete(int id)
         {
@@ -95,7 +93,9 @@ namespace Lesson2.Controllers
 
             return Json(new { text = "Ми його видалили" });
         }
-
+        /// <summary>
+        /// Повертає форму для редагування існуючої категорії
+        /// </summary>
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -114,7 +114,9 @@ namespace Lesson2.Controllers
 
             return View("Create", model);
         }
-
+        /// <summary>
+        ///  Оновлює категорію в базі даних на основі введених даних
+        /// </summary>
         [HttpPost]
         public IActionResult Edit(int id, CategoryCreateViewModel model)
         {

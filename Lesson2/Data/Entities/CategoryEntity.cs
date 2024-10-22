@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Lesson2.Data.Entities
 {
+    /// <summary>
+    /// CategoryEntity представляє таблицю categories в базі даних
+    /// </summary>
     [Table("tbl_categories")]
     public class CategoryEntity
     {

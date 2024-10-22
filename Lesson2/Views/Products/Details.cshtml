@@ -1,0 +1,73 @@
+﻿@model ProductItemViewModel
+<a asp-controller="Products" asp-action="Index" class="btn">🠈</a>
+<div class="container mt-4">
+    <div class="row">
+        <!-- Ліва частина - зображення товару -->
+        <div class="col-lg-8">
+            <div class="main-image">
+                <img id="mainImage" src="/uploading/600_@Model.Images.First()" class="d-block w-100" alt="Product Image" />
+            </div>
+            <div class="thumbnails mt-3">
+                @foreach (var imgItem in Model.Images)
+                {
+                    <img src="/uploading/300_@imgItem" class="img-thumbnail clickable-thumbnail" style="width: 100px;" />
+                }
+            </div>
+        </div>
+
+        <!-- Права частина - інформація про товар -->
+        <div class="col-lg-4">
+            <h1 class="product-name">@Model.Name</h1>
+            <p class="product-price">@Model.Price</p>
+            <button class="btn btn-success btn-lg mb-3">Купити</button>
+
+            <div class="product-description">
+                <h4>Опис товару</h4>
+                <p>Інформація про товар...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Перемикання зображень при кліку на ескіз
+        document.querySelectorAll('.clickable-thumbnail').forEach(thumbnail => {
+            thumbnail.addEventListener('click', function () {
+                document.getElementById('mainImage').src = this.src;
+            });
+        });
+    </script>
+}
+
+@* <h1>@Model.Name</h1>
+<p>Ціна: @Model.Price</p>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="main-image">
+                <img id="mainImage" src="/uploading/600_@Model.Images.First()" class="d-block w-100" alt="Product Image" />
+            </div>
+            <div class="thumbnails mt-3">
+                @foreach (var imgItem in Model.Images)
+                {
+                    <img src="/uploading/300_@imgItem" class="img-thumbnail clickable-thumbnail" style="width: 100px;" />
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<a asp-controller="Products" asp-action="Index" class="btn btn-secondary mt-3">Повернутись до списку</a>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.clickable-thumbnail').forEach(thumbnail => {
+            thumbnail.addEventListener('click', function () {
+                var mainImage = document.getElementById('mainImage');
+                mainImage.src = this.src.replace('300_', '600_'); // Замінюємо зображення на більший розмір
+            });
+        });
+    </script>
+} *@

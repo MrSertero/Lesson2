@@ -7,6 +7,8 @@ using Lesson2.Interfaces;
 using Lesson2.Models.Product;
 using Lesson2.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Globalization;
 
@@ -27,6 +29,9 @@ namespace Lesson2.Controllers
             _imageWorker = imageWorker;
             _environment = environment;
         }
+        /// <summary>
+        /// Повертає список продуктів із бази даних у вигляді моделей ProductItemViewModel
+        /// </summary>
         public IActionResult Index()
         {
             List<ProductItemViewModel> model = _dbContext.Products
@@ -34,23 +39,31 @@ namespace Lesson2.Controllers
                 .ToList();
             return View(model);
         }
+        /// <summary>
+        /// Повертає форму для створення нового продукту
+        /// </summary>
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            var categories = _dbContext.Categories
+                .Select(x => new { Value = x.Id, Text = x.Name })
+                .ToList();
+
+            ProductCreateViewModel viewModel = new()
+            {
+                CategoryList = new SelectList(categories, "Value", "Text")
+            };
+
+            return View(viewModel);
         }
+        /// <summary>
+        /// Створює новий продукт та зберігає його в базі даних
+        /// </summary>
         [HttpPost]
         public IActionResult Create(ProductCreateViewModel model)
         {
-            //var entity = _mapper.Map<ProductEntity>(model); // ПОМИЛКА з decimal
+            var entity = _mapper.Map<ProductEntity>(model);
 
-            var entity = new ProductEntity
-            {
-                Name = model.Name,
-                Price = decimal.Parse(model.Price, CultureInfo.InvariantCulture)
-            };
-
-            // Збереження в Базу даних інформації
             var dirName = "uploading";
             var dirSave = Path.Combine(_environment.WebRootPath, dirName);
 
@@ -59,9 +72,7 @@ namespace Lesson2.Controllers
                 Directory.CreateDirectory(dirSave);
             }
 
-            entity.ProductImages = new List<ProductImageEntity>(); // Ініціалізуємо колекцію
-
-            var categories = _dbContext.Categories.ToList();
+            entity.ProductImages = new List<ProductImageEntity>();
 
             if (model.Photos != null && model.Photos.Count > 0)
             {
@@ -83,12 +94,14 @@ namespace Lesson2.Controllers
                     }
                 }
             }
-            entity.Category = categories[categories.Count - 1];
             _dbContext.Products.Add(entity);
             _dbContext.SaveChanges();
 
             return RedirectToAction("Index");
         }
+        /// <summary>
+        /// Видаляє продукт за його ID
+        /// </summary>
         [HttpPost]
         public IActionResult Delete(int id)
         {
@@ -112,6 +125,103 @@ namespace Lesson2.Controllers
             _dbContext.SaveChanges();
 
             return Json(new { text = "Ми його видалили" });
+        }
+        /// <summary>
+        /// Показує детальну інформацію про продукт
+        /// </summary>
+        public IActionResult Details(int id)
+        {
+            var product = _dbContext.Products
+                .Include(p => p.ProductImages)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            // Мапінг даних з ProductEntity на ProductItemViewModel
+            var viewModel = _mapper.Map<ProductItemViewModel>(product);
+
+            return View(viewModel);
+        }
+        /// <summary>
+        /// Повертає форму для редагування продукту
+        /// </summary>
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var product = _dbContext.Products
+                .Include(p => p.ProductImages)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var model = _mapper.Map<ProductEditViewModel>(product);
+
+            var categories = _dbContext.Categories
+                .Select(x => new { Value = x.Id, Text = x.Name })
+                .ToList();
+
+            model.CategoryList = new SelectList(categories, "Value", "Text");
+
+            return View(model);
+        }
+        /// <summary>
+        /// Оновлює дані продукту та зображення
+        /// </summary>
+        [HttpPost]
+        public IActionResult Edit(ProductEditViewModel model)
+        {
+            var product = _dbContext.Products
+                .Include(p => p.ProductImages)
+                .FirstOrDefault(p => p.Id == model.Id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(model, product);
+
+            // Видалення вибраних зображень
+            if (model.ImagesToDelete != null && model.ImagesToDelete.Count > 0)
+            {
+                foreach (var image in model.ImagesToDelete)
+                {
+                    var productImage = _dbContext.ProductImages.FirstOrDefault(img => img.Image == image);
+                    if (productImage != null)
+                    {
+                        _imageWorker.Delete(productImage.Image); // Видалення зображення з диска
+                        _dbContext.ProductImages.Remove(productImage); // Видалення зображення з бази даних
+                    }
+                }
+            }
+
+            // Збереження нових фото
+            if (model.NewPhotos != null && model.NewPhotos.Count > 0)
+            {
+                foreach (var photo in model.NewPhotos)
+                {
+                    if (photo.Length > 0)
+                    {
+                        var imageEntity = new ProductImageEntity()
+                        {
+                            Product = product,
+                            Image = _imageWorker.Save(photo),
+                            Priority = product.ProductImages.Count // порядок
+                        };
+
+                        product.ProductImages.Add(imageEntity);
+                    }
+                }
+            }
+
+            _dbContext.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }

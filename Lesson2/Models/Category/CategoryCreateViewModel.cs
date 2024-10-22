@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace Lesson2.Models.Category;
-
+/// <summary>
+/// Використовується для передачі даних із форми створення категорії до контролера
+/// </summary>
 public class CategoryCreateViewModel
 {
     [Display(Name = "Назва категорії")]

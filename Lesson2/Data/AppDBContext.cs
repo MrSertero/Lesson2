@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lesson2.Data
 {
+    /// <summary>
+    /// AppDBContext є контекстом бази даних для застосунку і використовується для взаємодії з базою даних через Entity Framework Core
+    /// </summary>
     public class AppDBContext : DbContext
 	{
 		public AppDBContext(DbContextOptions<AppDBContext> options)

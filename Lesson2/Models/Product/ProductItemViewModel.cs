@@ -1,5 +1,8 @@
 ﻿namespace Lesson2.Models.Product
 {
+    /// <summary>
+    /// Використовується для передачі даних про продукт із контролера до View продуктів
+    /// </summary>
     public class ProductItemViewModel
     {
         public int Id { get; set; }

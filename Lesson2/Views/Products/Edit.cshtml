@@ -1,0 +1,52 @@
+﻿@model ProductEditViewModel
+
+<div class="container mt-4">
+    <h2>Редагування продукту</h2>
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="Name" class="form-label">Назва</label>
+            <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name">
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Price" class="form-label">Ціна</label>
+            <input asp-for="Price" class="form-control"/>
+        </div>
+
+        <div class="mb-3">
+            <label for="Description" class="form-label">Опис</label>
+            <textarea class="form-control" id="Description" name="Description">@Model.Description</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="Category" class="form-label">Категорія</label>
+            <select asp-for="SelectedCategoryId" asp-items="Model.CategoryList" class="form-select"></select>
+        </div>
+
+        <!-- Існуючі зображення -->
+        <div class="form-group">
+            <label for="existingImages">Існуючі фотографії</label>
+            <div id="existingImages">
+                @foreach (var image in Model.ExistingImages)
+                {
+                    <div class="existing-image">
+                        <img src="/uploading/300_@image" alt="Existing Image" style="width: 100px; height: auto;" />
+                        <input type="checkbox" class="delete-checkbox" value="@image" name="ImagesToDelete"/>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Додати нові фото -->
+        <div class="mb-3">
+            <label for="NewPhotos" class="form-label">Додати нові фото</label>
+            <input type="file" class="form-control" id="NewPhotos" name="NewPhotos" multiple>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Зберегти</button>
+    </form>
+
+    <!-- Кнопка назад -->
+    <button onclick="history.back()" class="btn btn-secondary mt-3">Назад</button>
+</div>
